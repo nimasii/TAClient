@@ -13,9 +13,10 @@ struct DownloadQueueView: View {
                     Task { await viewModel.refresh() }
                 }
             } else if viewModel.items.isEmpty && !viewModel.isLoading && viewModel.downloadProgress.isEmpty {
-                Text(String(localized: "download_queue_empty"))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    String(localized: "download_queue_empty"),
+                    systemImage: "arrow.down.circle"
+                )
             } else {
                 List {
                     ForEach(viewModel.items, id: \.id) { item in

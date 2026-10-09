@@ -18,26 +18,34 @@ struct ChannelDetailView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         channelHeader
 
-                        AdaptiveVideoGrid(
-                            videos: viewModel.videos,
-                            onVideoTap: { videoId in
-                                viewModel.navigateToVideo(videoId)
-                            },
-                            onToggleWatched: { videoId in
-                                Task { await viewModel.toggleWatched(videoId: videoId) }
-                            },
-                            onNearEnd: {
-                                Task { await viewModel.loadMoreVideos() }
-                            },
-                            isSelecting: viewModel.isSelecting,
-                            selectedIds: viewModel.selectedVideoIds,
-                            onEnterSelection: { videoId in
-                                viewModel.enterSelectionMode(videoId: videoId)
-                            },
-                            onToggleSelection: { videoId in
-                                viewModel.toggleSelection(videoId: videoId)
-                            }
-                        )
+                        if viewModel.videos.isEmpty {
+                            ContentUnavailableView(
+                                String(localized: "video_list_empty"),
+                                systemImage: "rectangle.stack"
+                            )
+                                .frame(maxWidth: .infinity, minHeight: 180)
+                        } else {
+                            AdaptiveVideoGrid(
+                                videos: viewModel.videos,
+                                onVideoTap: { videoId in
+                                    viewModel.navigateToVideo(videoId)
+                                },
+                                onToggleWatched: { videoId in
+                                    Task { await viewModel.toggleWatched(videoId: videoId) }
+                                },
+                                onNearEnd: {
+                                    Task { await viewModel.loadMoreVideos() }
+                                },
+                                isSelecting: viewModel.isSelecting,
+                                selectedIds: viewModel.selectedVideoIds,
+                                onEnterSelection: { videoId in
+                                    viewModel.enterSelectionMode(videoId: videoId)
+                                },
+                                onToggleSelection: { videoId in
+                                    viewModel.toggleSelection(videoId: videoId)
+                                }
+                            )
+                        }
 
                         if viewModel.isLoadingMore {
                             ProgressView()
@@ -170,6 +178,7 @@ struct ChannelDetailView: View {
                 }
 
                 Divider()
+                    .padding(.horizontal)
             }
         }
     }

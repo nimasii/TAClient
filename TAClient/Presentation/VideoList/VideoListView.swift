@@ -17,9 +17,10 @@ struct VideoListView: View {
                     Task { await viewModel.refresh() }
                 }
             } else if viewModel.videos.isEmpty {
-                Text(String(localized: "video_list_empty"))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    String(localized: "video_list_empty"),
+                    systemImage: "rectangle.stack"
+                )
             } else {
                 ScrollView {
                     VStack(spacing: 12) {
@@ -61,7 +62,8 @@ struct VideoListView: View {
                 }
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(selectedSectionTitle)
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             if viewModel.isSelecting {
                 ToolbarItem(placement: .principal) {
@@ -122,17 +124,7 @@ struct VideoListView: View {
                             }
                         }
                     } label: {
-                        HStack(spacing: 4) {
-                            Text(viewModel.vidTypeFilter == .all
-                                 ? String(localized: "video_list_title")
-                                 : viewModel.vidTypeFilter.label)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Image(systemName: "chevron.down")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                        }
-                        .fixedSize()
+                        Image(systemName: "square.grid.2x2")
                     }
                     .accessibilityLabel(String(localized: "vid_type_section_title"))
                 }
@@ -234,5 +226,11 @@ struct VideoListView: View {
             }
             Button(String(localized: "cancel"), role: .cancel) {}
         }
+    }
+
+    private var selectedSectionTitle: String {
+        viewModel.vidTypeFilter == .all
+            ? String(localized: "video_list_title")
+            : viewModel.vidTypeFilter.label
     }
 }

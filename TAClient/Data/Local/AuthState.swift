@@ -21,10 +21,15 @@ final class AuthState {
         return URL(string: serverURL)
     }
 
-    init(keychainService: KeychainService) {
+    init(keychainService: KeychainService, loadPersistedCredentials: Bool = true) {
         self.keychainService = keychainService
-        self.token = keychainService.load(for: .authToken)
-        self.serverURL = keychainService.load(for: .serverURL)
+        if loadPersistedCredentials {
+            self.token = keychainService.load(for: .authToken)
+            self.serverURL = keychainService.load(for: .serverURL)
+        } else {
+            self.token = nil
+            self.serverURL = nil
+        }
     }
 
     func setCredentials(token: String, serverURL: String) {

@@ -7,7 +7,7 @@ struct ErrorView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 48))
+                .font(.largeTitle)
                 .foregroundStyle(.secondary)
 
             Text(message)
@@ -22,7 +22,8 @@ struct ErrorView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
-        .padding()
+        .padding(24)
+        .frame(maxWidth: 440)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

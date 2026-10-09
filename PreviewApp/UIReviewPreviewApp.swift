@@ -1,0 +1,140 @@
+import SwiftUI
+
+@main
+struct UIReviewPreviewApp: App {
+    @State private var preview = UIReviewPreviewContext()
+    @State private var previewColorScheme: ColorScheme?
+
+    var body: some Scene {
+        WindowGroup {
+            @Bindable var router = preview.router
+
+            NavigationStack(path: $router.path) {
+                VideoListScreen(make: preview.makeVideoListViewModel)
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case .videoList:
+                            VideoListScreen(make: preview.makeVideoListViewModel)
+                        case .videoDetail(let videoId):
+                            VideoDetailScreen { preview.makeVideoDetailViewModel(videoId: videoId) }
+                        case .search:
+                            SearchScreen(make: preview.makeSearchViewModel)
+                        case .channelDetail(let channelId):
+                            ChannelDetailScreen { preview.makeChannelDetailViewModel(channelId: channelId) }
+                        case .downloadQueue:
+                            DownloadQueueScreen(make: preview.makeDownloadQueueViewModel)
+                        case .playlistList:
+                            PlaylistListScreen(make: preview.makePlaylistListViewModel)
+                        case .playlistDetail(let playlistId):
+                            PlaylistDetailScreen { preview.makePlaylistDetailViewModel(playlistId: playlistId) }
+                        case .settings:
+                            SettingsScreen(make: preview.makeSettingsViewModel)
+                        case .about:
+                            AboutView()
+                        }
+                    }
+            }
+            .environment(preview.authState)
+            .environment(preview.router)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                HStack(spacing: 6) {
+                    Image(systemName: "eye")
+                    Text("UI REVIEW PREVIEW")
+                        .fontWeight(.bold)
+                    Spacer(minLength: 8)
+                    Text("Synthetic · playback off")
+                        .lineLimit(1)
+                    Menu {
+                        Button("System") { previewColorScheme = nil }
+                        Button("Light") { previewColorScheme = .light }
+                        Button("Dark") { previewColorScheme = .dark }
+                    } label: {
+                        Image(systemName: "circle.lefthalf.filled")
+                    }
+                    .accessibilityLabel("Preview appearance")
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.bar)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("UI review preview. Synthetic fixtures. Playback is unavailable.")
+            }
+            .preferredColorScheme(previewColorScheme)
+            .tint(.accentColor)
+        }
+    }
+}
+
+@MainActor
+@Observable
+final class UIReviewPreviewContext {
+    let authState: AuthState
+    let router: AppRouter
+    let repository: UIReviewPreviewRepository
+    let sponsorBlockSettings: SponsorBlockSettings
+
+    init() {
+        authState = AuthState(keychainService: KeychainService(), loadPersistedCredentials: false)
+        router = AppRouter(authState: authState)
+        repository = UIReviewPreviewRepository()
+        sponsorBlockSettings = SponsorBlockSettings(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+        router.onLoginSuccess()
+    }
+
+    func makeVideoListViewModel() -> VideoListViewModel {
+        VideoListViewModel(
+            videoRepository: repository,
+            authRepository: repository,
+            downloadRepository: repository,
+            router: router
+        )
+    }
+
+    func makeVideoDetailViewModel(videoId: String) -> VideoDetailViewModel {
+        VideoDetailViewModel(
+            videoId: videoId,
+            videoRepository: repository,
+            authState: authState,
+            router: router,
+            sponsorBlockSettings: sponsorBlockSettings,
+            playlistRepository: repository
+        )
+    }
+
+    func makeSearchViewModel() -> SearchViewModel {
+        SearchViewModel(searchRepository: repository, router: router)
+    }
+
+    func makeChannelDetailViewModel(channelId: String) -> ChannelDetailViewModel {
+        ChannelDetailViewModel(
+            channelId: channelId,
+            channelRepository: repository,
+            videoRepository: repository,
+            router: router
+        )
+    }
+
+    func makeDownloadQueueViewModel() -> DownloadQueueViewModel {
+        DownloadQueueViewModel(downloadRepository: repository, router: router)
+    }
+
+    func makePlaylistListViewModel() -> PlaylistListViewModel {
+        PlaylistListViewModel(playlistRepository: repository, router: router)
+    }
+
+    func makePlaylistDetailViewModel(playlistId: String) -> PlaylistDetailViewModel {
+        PlaylistDetailViewModel(
+            playlistId: playlistId,
+            playlistRepository: repository,
+            videoRepository: repository,
+            router: router
+        )
+    }
+
+    func makeSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel(settings: sponsorBlockSettings)
+    }
+}
