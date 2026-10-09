@@ -145,28 +145,21 @@ extension DataLayerSuite {
     }
 
     @Test func request_noToken_noAuthHeader() async throws {
-        let authState = MockResponse.makeAuthState(token: nil, serverURL: nil)
-        authState.setCredentials(token: "", serverURL: "https://ta.example.com")
-        // Clear token only (set empty string via credentials, then nil out)
-        let keychain = KeychainService()
-        keychain.clearAll()
-        let noTokenState = AuthState(keychainService: keychain)
-        // serverURL set but no token
-        // We need a custom approach: create authState with serverURL but no token
-        // AuthState requires keychain, so we set serverURL in keychain only
-        keychain.save("https://ta.example.com", for: .serverURL)
-        let freshState = AuthState(keychainService: keychain)
-
-        let (client, _) = MockResponse.makeAPIClient(authState: freshState)
+        let authState = AuthState(
+            keychainService: KeychainService(),
+            loadPersistedCredentials: false
+        )
+        let (client, _) = MockResponse.makeAPIClient(authState: authState)
         MockResponse.setUp(json: ["response": "pong"])
 
-        let _: PingDTO = try await client.request(endpoint: .ping)
+        let _: PingDTO = try await client.request(
+            endpoint: .ping,
+            baseURL: URL(string: "https://ta.example.com")
+        )
 
+        #expect(authState.token == nil)
         let authHeader = MockURLProtocol.lastRequest?.value(forHTTPHeaderField: "Authorization")
         #expect(authHeader == nil)
-
-        // Cleanup
-        keychain.clearAll()
     }
 
     // MARK: - Body encoding
