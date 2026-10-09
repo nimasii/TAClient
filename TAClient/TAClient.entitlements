@@ -4,7 +4,7 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)ru.mzhukov.TAClient</string>
+		<string>$(AppIdentifierPrefix)com.jacobcampbell.ta-client</string>
 	</array>
 </dict>
 </plist>
