@@ -14,9 +14,10 @@ struct PlaylistListView: View {
                     Task { await viewModel.loadPlaylists() }
                 }
             } else if viewModel.playlists.isEmpty {
-                Text(String(localized: "playlist_list_empty"))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    String(localized: "playlist_list_empty"),
+                    systemImage: "music.note.list"
+                )
             } else {
                 ScrollView {
                     LazyVStack(spacing: 12) {

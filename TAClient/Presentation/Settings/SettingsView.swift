@@ -68,6 +68,7 @@ struct SettingsView: View {
                 .accessibilityLabel(String(localized: "settings_about"))
             }
         }
+        .formStyle(.grouped)
         .navigationTitle(String(localized: "settings_title"))
         .navigationBarTitleDisplayMode(.inline)
     }

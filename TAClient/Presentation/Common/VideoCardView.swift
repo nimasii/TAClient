@@ -10,6 +10,7 @@ struct VideoCardView: View {
             ZStack(alignment: .bottom) {
                 AuthenticatedAsyncImage(url: video.thumbUrl)
                     .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                    .background(Color(.secondarySystemBackground))
                     .clipped()
 
                 // Overlay badges
@@ -47,22 +48,21 @@ struct VideoCardView: View {
                         VStack {
                             Spacer()
                             Rectangle()
-                                .fill(Color.red)
+                                .fill(Color.accentColor)
                                 .frame(width: geo.size.width * video.progress / 100, height: 3)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-            // Title (fixed height for uniform grid rows)
+            // Allow the title to grow with Dynamic Type and localized text.
             Text(video.title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .lineLimit(2)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(3)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: UIFont.preferredFont(forTextStyle: .subheadline).lineHeight * 2 + 4)
+                .fixedSize(horizontal: false, vertical: true)
 
             // Channel info
             Button {

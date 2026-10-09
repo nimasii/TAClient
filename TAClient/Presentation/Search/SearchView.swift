@@ -8,13 +8,15 @@ struct SearchView: View {
             if viewModel.isLoading {
                 LoadingView()
             } else if viewModel.hasSearched && viewModel.videos.isEmpty {
-                Text(String(localized: "search_empty"))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    String(localized: "search_empty"),
+                    systemImage: "magnifyingglass"
+                )
             } else if viewModel.videos.isEmpty {
-                Text(String(localized: "search_hint"))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    String(localized: "search_hint"),
+                    systemImage: "magnifyingglass"
+                )
             } else {
                 ScrollView {
                     AdaptiveVideoGrid(

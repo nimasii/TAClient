@@ -5,10 +5,11 @@ struct VideoInfoSection: View {
     var onChannelTap: ((String) -> Void)? = nil
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             // Title
             Text(video.title)
-                .font(.headline)
+                .font(.title3.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
 
             // Channel
             Button {
@@ -26,9 +27,11 @@ struct VideoInfoSection: View {
 
                     Text(video.channelName)
                         .font(.subheadline)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(.primary)
                 }
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(video.channelName)
 
             // Stats/dates + Media info
             ViewThatFits(in: .horizontal) {
@@ -36,6 +39,9 @@ struct VideoInfoSection: View {
                 datesAndMedia(short: true)
             }
         }
+        .padding(16)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .padding(.horizontal)
     }
 
