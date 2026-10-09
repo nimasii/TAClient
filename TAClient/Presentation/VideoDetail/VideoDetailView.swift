@@ -125,6 +125,24 @@ struct VideoDetailView: View {
 
     @ViewBuilder
     private func playerArea(_ video: Video) -> some View {
+#if UI_REVIEW_PREVIEW
+        ZStack {
+            Color(.secondarySystemBackground)
+            VStack(spacing: 10) {
+                Image(systemName: "play.slash.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+                Text("UI Review Preview")
+                    .font(.headline)
+                Text("Playback is not included in this preview.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.center)
+            .padding()
+        }
+        .aspectRatio(16.0 / 9.0, contentMode: .fit)
+#else
         if let player = viewModel.player {
             ZStack {
                 AVPlayerView(
@@ -236,6 +254,7 @@ struct VideoDetailView: View {
             }
             .aspectRatio(16.0 / 9.0, contentMode: .fit)
         }
+#endif
     }
 
     // MARK: - SponsorBlock Banner

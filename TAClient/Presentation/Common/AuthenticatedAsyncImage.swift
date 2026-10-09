@@ -8,6 +8,15 @@ struct AuthenticatedAsyncImage: View {
     @State private var loadTask: Task<Void, Never>?
 
     var body: some View {
+#if UI_REVIEW_PREVIEW
+        placeholderColor
+            .overlay {
+                Image(systemName: "photo")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+#else
         Group {
             if let image {
                 Image(uiImage: image)
@@ -27,6 +36,7 @@ struct AuthenticatedAsyncImage: View {
         .onDisappear {
             loadTask?.cancel()
         }
+#endif
     }
 
     private func loadIfNeeded() {
